@@ -20,8 +20,8 @@
         :output-dir "public/js"
         :asset-path "/js"
         :dev-http   {8089 "public/"}
-        :modules    {:main {:entries [pascal]
-                            :init-fn pascal/init!}}
+        :modules    {:main {:entries [pascal.core]
+                            :init-fn pascal.core/init!}}
         :devtools   {:http-port    8089
                      :http-handler shadow.http.push-state/handle
                      :http-root    "public"
