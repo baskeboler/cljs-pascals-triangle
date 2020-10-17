@@ -1,0 +1,35 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/dev"
+  "src/main"
+  "src/test"]
+
+ :dependencies
+ [[reagent "1.0.0-alpha2"]
+  [cider/cider-nrepl "0.25.4"]
+  [binaryage/devtools "1.0.0"]
+  [garden "1.3.10"]
+  [refactor-nrepl "2.5.0"]]
+
+
+ :nrepl {:port 9999}
+ :builds
+ {:app {:target     :browser
+        :compiler-options {:optimizations :simple}
+        :build-hooks [(build/setup-target-dir)]
+        :output-dir "public/js"
+        :asset-path "/js"
+        :dev-http   {8089 "public/"}
+        :modules    {:main {:entries [pascal]
+                            :init-fn pascal/init!}}
+        :devtools   {:http-port    8089
+                     :http-handler shadow.http.push-state/handle
+                     :http-root    "public"
+                     :watch-dir    "resources"}
+        :dev        {:compiler-options
+                     {:optimization :none
+                      :closure-defines
+                      {re_frame.trace.trace_enabled?                true 
+                       "re_frame.trace.trace_enabled_QMARK_"        true
+                       "day8.re_frame.tracing.trace_enabled_QMARK_" true
+                       "goog.DEBUG"                                 true}}}}}}
