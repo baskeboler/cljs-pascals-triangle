@@ -15,7 +15,7 @@
  :nrepl {:port 9999}
  :builds
  {:app {:target     :browser
-        :compiler-options {:optimizations :simple}
+        :compiler-options {:optimizations :advanced}
         :build-hooks [(build/setup-target-dir)]
         :output-dir "public/js"
         :asset-path "/js"

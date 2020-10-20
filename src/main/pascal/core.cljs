@@ -9,16 +9,16 @@
 (def pascal-row-aux
   (memoize
    (fn [n]
-    (loop [row 1
-           summed-partitions []]
+     (loop [row               1
+            summed-partitions []]
       (cond
         (= n 0) '(1)
         (= n row)
         (concat '(1) summed-partitions '(1))
-        :else (recur (inc row)
-               (map (partial apply +)
-                    (partition 2 1
-                               (concat '(1) summed-partitions '(1))))))))))
+        :else   (recur (inc row)
+                     (map (partial apply +)
+                          (partition 2 1
+                                     (concat '(1) summed-partitions '(1))))))))))
 (defn pascal-row [n]
   (if (= n 0)
     '(1)
@@ -26,15 +26,23 @@
            sums (map (partial apply +) (partition 2 1 previous-row))]
        (concat '(1) sums '(1)))))
 
+(defonce row-count (r/atom 5))
+(defn inc-rows []
+  (swap! row-count + 5))
+
 (defn app []
   (let [active-n (r/atom nil)]
     (fn []
       [:div.app 
        [:h1 "pascal's triangle"]
-       [:div.debug-panel (str @active-n)]
+       [:div.debug-panel
+        (str @active-n)]
+       [:button
+        {:on-click inc-rows}
+        "more rows"]
        [:div.triangle
         (doall
-         (for [i (range 50)]
+         (for [i (range @row-count)]
            ^{:key (str "row-" i)}
            [:div.row
             ((comp doall map-indexed)
