@@ -15,11 +15,15 @@
 
 (gs/defclass highlighted)
 (gs/defclass lighter)
+(gs/defid minimap)
+
 
 (def col-styles
   [[triangle {:width :fit-content}]
    [(gs/selector col)
     {:margin      :none
+     :width :max-content
+     :height :max-content
      :border      "1px solid lightgray"
      :padding     "0.2rem 0.6rem"
      :font-family "Playfair Display SC, serif"}]
@@ -48,9 +52,16 @@
     {:color "#ff6666"}]
    [(gs/descendant debug-panel position)
     {:position :absolute
-     :right     "100%"
+     :right    "100%"
      :color    :red
-     :width    :max-content}]]) 
+     :width    :max-content}]
+   [minimap
+    {:position :fixed
+     :bottom   "1rem"
+     :right    "1rem"
+     ;; :height   "250px"
+     :width    "300px"
+     :z-index  100}]])
 
 (def ^:export css-str (css {:pretty-print? true} col-styles))
 

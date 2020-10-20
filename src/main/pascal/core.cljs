@@ -2,10 +2,18 @@
   (:require [reagent.core :as r]
             [reagent.dom :refer [render]]
             [pascal.styles :refer [css-str]]
-            [goog.string :refer [unescapeEntities]]))
-
+            [goog.string :refer [unescapeEntities]]
+            [goog.dom :refer [getElement getElementByClass]]
+            ["pagemap" :as pagemap]))
 (defonce app-root (. js/document (getElementById "root")))
-
+(def ms #js
+  {"viewport"  (getElementByClass "triangle")
+   "back"     "rgba(0,0,0,0.02)"
+   "view"     "rgba(255,0,0,0.05)"
+   "drag"     "rgba(0,0,0,0.10)"
+   "styles"   #js {"header,footer,section,article,div.row" "rgba(0,0,0,0.08)"
+                   "span.col"                              "rgba(0,0,0,0.3)"}
+   "interval" nil})
 (def pascal-row-aux
   (memoize
    (fn [n]
@@ -34,8 +42,10 @@
     col)
    0))
 (defonce row-count (r/atom 5))
+
 (defn inc-rows []
   (swap! row-count + 5))
+  
 
 (defn debug-panel-data [{:keys [col row] :as arg}]
   (when (and (> col 0) (> row 1) (<= col row))
@@ -88,13 +98,15 @@
 
                 n])
              (pascal-row i))]))]
+       [:canvas#minimap]
        [:style css-str]])))
 
 (defn mount-components! []
   (render [app] app-root))
 
 (defn init! []
-  (mount-components!))
+  (mount-components!)
+  (pagemap (getElement "minimap") ms))
 
 (init!)
 (println "starting")
