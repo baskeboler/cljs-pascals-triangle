@@ -1,8 +1,8 @@
 (ns pascal.core
   (:require [reagent.core :as r]
             [reagent.dom :refer [render]]
-            [pascal.styles :refer [css-str]]))
-
+            [pascal.styles :refer [css-str]]
+            [goog.string :refer [unescapeEntities]]))
 
 (defonce app-root (. js/document (getElementById "root")))
 
@@ -26,17 +26,46 @@
            sums (map (partial apply +) (partition 2 1 previous-row))]
        (concat '(1) sums '(1)))))
 
+(defn pascal-element [col row]
+  (if  (<= col row)
+   (get
+    (vec
+     (pascal-row row))
+    col)
+   0))
 (defonce row-count (r/atom 5))
 (defn inc-rows []
   (swap! row-count + 5))
 
+(defn debug-panel-data [{:keys [col row] :as arg}]
+  (when (and (> col 0) (> row 1) (<= col row))
+    (let [n (pascal-element col row)
+          [t1 t2] (mapv #(pascal-element % (dec row)) [ (dec col) col])]
+      (merge arg {:term1 t1 :term2 t2 :sum n}))))
+
+(defn debug-panel [active-n]
+  (when-let [debug-data (debug-panel-data active-n)]
+    [:div.debug-panel
+     [:div.term1
+      [:span.position (unescapeEntities
+                       (str "(" (dec (:col debug-data)) ", " (dec (:row debug-data)) ") &rarr;"))]
+      (:term1 debug-data)]
+     [:div.term2
+      [:span.position (unescapeEntities
+                       (str "(" (:col debug-data) ", " (dec (:row debug-data)) ") &rarr;"))]
+      (str "+ " (:term2 debug-data))]
+     [:hr]
+     [:div.sum
+      [:span.position (unescapeEntities
+                       (str "(" (:col debug-data) ", " (:row debug-data) ") &rarr;"))]
+      (:sum debug-data)]]))
+
 (defn app []
   (let [active-n (r/atom nil)]
     (fn []
-      [:div.app 
+      [:div.app
        [:h1 "pascal's triangle"]
-       [:div.debug-panel
-        (str @active-n)]
+       [debug-panel @active-n]
        [:button
         {:on-click inc-rows}
         "more rows"]
